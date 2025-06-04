@@ -3,6 +3,8 @@
 // Date: 6/2/2025
 
 // variables
+"use strict";
+
 const CAPTCHA_LENGTH = 6;
 const FONT_SIZE = 48;
 const NOISE_LINE_COUNT = 20;
@@ -14,34 +16,35 @@ let currentCaptcha;
 let inputField;
 let verifyButton;
 let feedbackSpan;
-let timeSpan;
+let timerSpan;
+
 
 let captchaStartMillis = 0;
 
 // helper functions
-function randomString(length) {
+function randomString() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let s = "";
-  for (let i = 0; i < length; i++)
-  {
-    s += chars.charAt(floor(random(chars.length)));
-  }
-
-  return s;
+  console.log(wordList)
+  let word = wordList["words"][floor(random(10000))]
+  length = word.length
+  
+  return word;
 }
 
 // captcha class
 class Captcha {
   // by default it'll be text
-  constructor(len) {
-    this.len = len;
-    this.text = randomString(this.len);
+  constructor(word) {
+    this.len = word.length;
+    this.text = word;
+    this.seed = wordValue(word);
     this.rotations = Array.from({ length: this.len }, () => random(-0.3, 0.3));
   }
 
   // todo: image extention
   
   draw() {
+    randomSeed(this.seed)
     background(240);
     textAlign(CENTER, CENTER);
     textSize(FONT_SIZE);
@@ -51,8 +54,9 @@ class Captcha {
     const xStart = WIDTH / (this.len + 1);
     for (let i = 0; i < this.len; i++) {
       push();
+      fill(random(200), random(200), random(200))
       const charX = xStart * (i + 1);
-      const charY = HEIGHT / 2;
+      const charY = random(HEIGHT*0.1, HEIGHT*0.9);
       translate(charX, charY);
       rotate(this.rotations[i]);
       fill(30);
@@ -118,8 +122,24 @@ function draw() {
   }
 }
 
+function resizeCanvas(width, height) {
+  canvas.width = width;
+  canvas.height = height;
+  draw();
+}
+
+function wordValue(word) {
+  let value = 0;
+  
+  for (let i = 0; i < word.length; i++)
+    value += word.charCodeAt(i);
+  
+  return value
+}
+
 function newCaptcha() {
-  currentCaptcha = new Captcha(CAPTCHA_LENGTH);
+  currentCaptcha = new Captcha(randomString());
+  canvas.set
   inputField.value("");          
   feedbackSpan.html("");  
   captchaStartMillis = millis();

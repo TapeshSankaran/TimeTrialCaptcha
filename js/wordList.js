@@ -1,5 +1,5 @@
-{
-    "words": [
+let wordList = {
+    words: [
         "a",
         "aa",
         "aaa",
