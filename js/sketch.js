@@ -15,6 +15,7 @@ const TIME_LIMIT = 15;
 let currentCaptcha;
 let currGenerator;
 let inputField;
+let inputField2;
 let verifyButton;
 let feedbackSpan;
 let timerSpan;
@@ -49,7 +50,7 @@ class Captcha {
   
   draw() {
     let gfx = createGraphics(WIDTH, HEIGHT);
-    this.color = [random(100), random(100), random(100)]
+    this.color = [random(200), random(200), random(200)]
     randomSeed(this.seed)
     
     gfx.background(240);
@@ -57,7 +58,7 @@ class Captcha {
     gfx.textSize(FONT_SIZE);
     gfx.noFill();
     gfx.strokeWeight(1);
-    gfx.fill(this.color[0], this.color[1], this.color[2])
+    gfx.fill(this.color[0]/4, this.color[1]/4, this.color[2]/4)
     const xStart = WIDTH / (this.len + 1);
     for (let i = 0; i < this.len; i++) {
       gfx.push();
@@ -71,7 +72,7 @@ class Captcha {
     }
 
     // background static effect done here
-    gfx.stroke(this.color[0]+150, this.color[1]+150, this.color[2]+150)
+    gfx.stroke(this.color[0], this.color[1], this.color[2])
 
     for (let i = 0; i < NOISE_LINE_COUNT; i++) {  
       const x1 = random(WIDTH);
@@ -90,7 +91,7 @@ class Captcha {
 
 class Generator {
   constructor() {
-    this.numShapes = 12000;
+    this.numShapes = 36000;
     this.ImgScale = 1;
     this.design;
   }
@@ -143,12 +144,16 @@ class Generator {
     noStroke();
     textSize(6)
     for(let box of this.design.fg) {
-      fill(box.fill[0], box.fill[1], box.fill[2], 100);
-      //push();
-      //translate(-box.w/2, -box.h/2)
-      
-      text(word.charAt(random(word.length)), box.x, box.y);
-      //pop();
+      if (box.fill[0] > 235 && box.fill[1] > 235 && box.fill[2] > 235) {
+        continue;
+      }
+        fill(box.fill[0], box.fill[1], box.fill[2], 100);
+        //push();
+        //translate(-box.w/2, -box.h/2)
+        
+        text(word.charAt(random(word.length)), box.x, box.y);
+        //pop();
+
     }
   }
 }
@@ -159,6 +164,7 @@ function setup() {
   canvas.parent("canvas-container");
 
   inputField = select("#captcha-input");
+  inputField2 = document.querySelector("#captcha-input");
   verifyButton = document.querySelector("#verify-btn");
   feedbackSpan = select("#feedback");
   timerSpan = select("#timer");
@@ -175,7 +181,7 @@ function setup() {
     }
   });
 
-  verifyButton.addEventListener("keydown", (e) => {
+  inputField2.addEventListener("keydown", (e) => {
     if (e.key == "Enter") verifyButton.click();
   })
 
