@@ -12,6 +12,11 @@ const WIDTH = 300;
 const HEIGHT = 120;
 const TIME_LIMIT = 15;
 
+let difficulty = 0;
+let currentLength = CAPTCHA_LENGTH;
+let currentNoise = NOISE_LINE_COUNT;
+let currentLimit = TIME_LIMIT;
+
 let currentCaptcha;
 let currGenerator;
 let inputField;
@@ -72,13 +77,12 @@ class Captcha {
     }
 
     // background static effect done here
-    gfx.stroke(this.color[0], this.color[1], this.color[2])
-
-    for (let i = 0; i < NOISE_LINE_COUNT; i++) {  
-      const x1 = random(WIDTH);
-      const y1 = random(HEIGHT);
-      const x2 = random(WIDTH);
-      const y2 = random(HEIGHT);
+    gfx.stroke(this.color[0], this.color[1], this.color[2]);
+    for (let i = 0; i < currentNoise; i++) {
+      const x1 = random(WIDTH),
+            y1 = random(HEIGHT),
+            x2 = random(WIDTH),
+            y2 = random(HEIGHT);
       gfx.line(x1, y1, x2, y2);
     }
     return gfx;
@@ -175,6 +179,7 @@ function setup() {
 
     if (currentCaptcha.verify(userText)) {
       feedbackSpan.html("CORRECT!");
+      difficulty++;
       newCaptcha();
     } else {
       feedbackSpan.html("INCORRECT!");
@@ -196,12 +201,13 @@ function draw() {
 
   // time limit
   const elapsedSec = (millis() - captchaStartMillis) / 1000;
-  const remaining = TIME_LIMIT - floor(elapsedSec);
+  const remaining = currentLimit - floor(elapsedSec);
 
   if (remaining >= 0) {
     timerSpan.html(`Time left: ${remaining}s`);
   } else {
     timerSpan.html(`Time left: 0s`);
+    difficulty = 0;
     newCaptcha();
   }
 }
@@ -222,13 +228,19 @@ function wordValue(word) {
 }
 
 function newCaptcha() {
-  currentCaptcha = new Captcha(randomString());
+  currentLength = CAPTCHA_LENGTH + floor(difficulty / 2);
+  currentNoise  = NOISE_LINE_COUNT + difficulty;
+  currentLimit  = max(5, TIME_LIMIT - floor(difficulty / 3));
+
+  const word = randomString();
+  currentCaptcha = new Captcha(word);
   currentCaptcha.image = currentCaptcha.draw();
+  
   currGenerator = new Generator();
   currGenerator.design = currGenerator.initDesign(currentCaptcha.image);
-  canvas.set
-  inputField.value("");          
-  feedbackSpan.html("");  
+
+  inputField.value("");
+  feedbackSpan.html("");
   captchaStartMillis = millis();
-  timerSpan.html(`Time left: ${TIME_LIMIT}s`);
+  timerSpan.html(`Time left: ${currentLimit}s`);
 }
