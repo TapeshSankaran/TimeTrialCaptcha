@@ -10,6 +10,11 @@ const WIDTH = 300;
 const HEIGHT = 120;
 const TIME_LIMIT = 15;
 
+let difficulty = 0;
+let currentLength = CAPTCHA_LENGTH;
+let currentNoise = NOISE_LINE_COUNT;
+let currentLimit = TIME_LIMIT;
+
 let currentCaptcha;
 let inputField;
 let verifyButton;
@@ -63,7 +68,7 @@ class Captcha {
 
     // background static effect done here
     stroke(100, 50);
-    for (let i = 0; i < NOISE_LINE_COUNT; i++) {
+    for (let i = 0; i < currentNoise; i++) {
       const x1 = random(WIDTH);
       const y1 = random(HEIGHT);
       const x2 = random(WIDTH);
@@ -92,6 +97,7 @@ function setup() {
 
     if (currentCaptcha.verify(userText)) {
       feedbackSpan.html("CORRECT!");
+      difficulty++;
       newCaptcha();
     } else {
       feedbackSpan.html("INCORRECT!");
@@ -108,20 +114,26 @@ function draw() {
 
   // time limit
   const elapsedSec = (millis() - captchaStartMillis) / 1000;
-  const remaining = TIME_LIMIT - floor(elapsedSec);
+  const remaining = currentLimit - floor(elapsedSec);
 
   if (remaining >= 0) {
     timerSpan.html(`Time left: ${remaining}s`);
   } else {
     timerSpan.html(`Time left: 0s`);
+    difficulty = 0;
     newCaptcha();
   }
 }
 
 function newCaptcha() {
-  currentCaptcha = new Captcha(CAPTCHA_LENGTH);
+  currentLength = CAPTCHA_LENGTH + floor(difficulty/2);
+  currentNoise = NOISE_LINE_COUNT + difficulty;
+  currentLimit = max(5, TIME_LIMIT - floor(difficulty/3));
+
+  currentCaptcha = new Captcha(currentLength);
+
   inputField.value("");          
   feedbackSpan.html("");  
   captchaStartMillis = millis();
-  timerSpan.html(`Time left: ${TIME_LIMIT}s`);
+  timerSpan.html(`Time left: ${currentLimit}s`);
 }
