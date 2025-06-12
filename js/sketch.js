@@ -7,7 +7,7 @@
 
   const CAPTCHA_LENGTH = 6;
   const FONT_SIZE = 48;
-  const NOISE_LINE_COUNT = 20;
+  const NOISE_LINE_COUNT = 10;
   const WIDTH = 300;
   const HEIGHT = 120;
   const TIME_LIMIT = 15;
@@ -60,7 +60,7 @@
       // gfx.textSize(FONT_SIZE);
       gfx.noFill();
       gfx.strokeWeight(1);
-      gfx.fill(this.color[0]/4, this.color[1]/4, this.color[2]/4)
+      gfx.fill(0, 0, 0)
       const xStart = WIDTH / (this.len + 1);
       /*
       for (let i = 0; i < this.len; i++) {
@@ -119,7 +119,7 @@
 
   class Generator {
     constructor() {
-      this.numShapes = 36000;
+      this.numShapes = 40000;
       this.ImgScale = 1;
       this.design;
     }
@@ -135,8 +135,8 @@
       for  (let i = 0; i <= this.numShapes; i++) {
         let x = random(WIDTH);
         let y = random(HEIGHT);
-        let w = random(WIDTH/16);
-        let h = random(HEIGHT/16);
+        let w = random(WIDTH/32);
+        let h = random(HEIGHT/32);
         let origin_fill = image.get(x, y/this.ImgScale)
         let fill = image.get((x/this.ImgScale+w), (y/this.ImgScale+h));
         if (x+w >= WIDTH || y+h >= HEIGHT) {
@@ -172,15 +172,19 @@
       noStroke();
       textSize(6)
       for(let box of this.design.fg) {
-        if (box.fill[0] > 235 && box.fill[1] > 235 && box.fill[2] > 235) {
+        let t = frameCount * 0.75;
+        let n_func = noise(box.x, box.y, t)
+
+        if (box.fill[0] > 225 && box.fill[1] > 225 && box.fill[2] > 225) {
           continue;
         }
-          fill(box.fill[0], box.fill[1], box.fill[2], 100);
-          //push();
-          //translate(-box.w/2, -box.h/2)
-          
-          text(word.charAt(random(word.length)), box.x, box.y);
-          //pop();
+        
+        fill(box.fill[0]*n_func, box.fill[1]*n_func, box.fill[2]*n_func, 100*n_func);
+        //push();
+        //translate(-box.w/2, -box.h/2)
+        
+        text(word.charAt(random(word.length)), box.x, box.y);
+        //pop();
 
       }
     }
