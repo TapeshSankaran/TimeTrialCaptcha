@@ -32,7 +32,7 @@
     let now = new Date()
     randomSeed(now.getTime());
 
-    let word = wordList["words"][floor(random(10000))]
+    let word = wordList["words"][floor(random(9996))]
     length = word.length
     
     return word;
@@ -52,7 +52,7 @@
     
     draw() {
       let gfx = createGraphics(WIDTH, HEIGHT);
-      this.color = [random(200), random(200), random(200)]
+      this.color = [100 + random(155), 100 + random(155), 100 + random(155)]
       randomSeed(this.seed)
       
       gfx.background(240);
@@ -85,14 +85,14 @@
         // setting position
         const jx = (noise(i, t) - 0.5) * difficulty * 10;
         const jy = (noise(i + 50, t) - 0.5) * difficulty * 5;
-        gfx.translate(baseX + jx, baseY + jy);
+        gfx.translate(baseX, baseY + jy);
 
         // setting rotation
-        const rotJitter = (noise(i + 100, t) - 0.5) * difficulty * 0.5;
+        const rotJitter = (noise(i + 100, t) - 0.5) * difficulty * 0.25;
         gfx.rotate(this.rotations[i] + rotJitter);
 
         // setting size
-        const sizeJitter = (noise(i + 200, t) - 0.5) * difficulty * 5;
+        const sizeJitter = (noise(i + 200, t) - 0.5) * difficulty;
         gfx.textSize(FONT_SIZE + sizeJitter);
 
         gfx.noStroke();
